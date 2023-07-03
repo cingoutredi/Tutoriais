@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+	<title>Tutorial Jogo de Celular</title>
+	<meta name="description" content="Como programar um jogo para android com a linguagem Java. Comandos 'extends View()', onTouchEvent(), onDraw(), onSizeChanged() e TimerTask().">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="../../styles.css">
+	<meta name="google-site-verification" content="3IqTasuwIcwuzjUSpqrxM0VfcRGI-nFKsn4m4JA0Fws" />
+</head>
+
+<body>
+	<h1 onclick="location.href='../../index.htm';">Tutoriais</h1>
+	<div id="principal">
+	
+<h2>Programando um joguinho de celular</h2>
+
+Esse tutorial se propõe a demonstrar como programar o joguinho sem <b>framework</b> ou <b>game-engine</b>.<br>
+Programação java (nível intermediário)
+
+<hr><h2>Compilador / I.D.E.</h2>
+
+É preciso instalar um software que transforma o código java (e as imagens) em um arquivo instalável/executável.<br><br>
+
+O mais indicado é o <a href=https://developer.android.com/studio target=_blank>Android Studio</a><br>
+Mas eu tenho usado mais o <a href=https://www.jetbrains.com/idea target=_blank>Intellij Idea</a><br><br>
+É possível programar no próprio celular com o <a href=https://play.google.com/store/apps/details?id=com.aide.ui target=_blank>AIDE</a>
+
+<hr><h2>Imagens do Jogo</h2>
+
+<a href=drawable.zip target=_blank>Nesse link</a> estão todas as imagens utilizadas no jogo.<br><br>
+A maioria dessas imagens é disponibilizadas pelo site www.kenney.nl<br><br>
+São poucas imagens porque esse é um jogo pequeno.
+
+<hr><h2>Iniciando o projeto</h2>
+
+Nessas três opções de compilador/I.D.E. existe a opção de iniciar um novo projeto.<br><br>
+
+O <b>androidStudio</b> é o mais completo mas ele exige mais da máquina.<br>
+Uma das vantagens do <b>intellijIdea</b> é que ele funciona no windows 7.<br>
+O <b>AIDE</b> é muito bom para programar do celular mas ele tem umas limitações.<br><br>
+
+Depois que o compilador gerou a base do app, deve haver uma pasta <b>/main/</b> que contém uma pasta <b>/java/</b> e uma pasta <b>/res/</b> e um <b>Manifest</b><br><br>
+
+<img class=imagem src=screenshot1.png onclick="window.open(this.src,'_blank');">
+
+<hr><h2>Editando o Manifest</h2>
+
+O arquivo <b>AndroidManifest.xml</b> armazena informações sobre o app, mas esse não é um arquivo de código-fonte java.<br>
+É como um <b>'arquivo de configuração'</b>.
+
+<pre>&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    &lt;application
+            android:allowBackup="true"
+            android:label="Zombie Waves"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+            android:icon="@drawable/attack">
+        &lt;activity
+                android:name=".MainActivity"
+                android:screenOrientation="landscape"
+                android:exported="true">
+            &lt;intent-filter>
+                &lt;action android:name="android.intent.action.MAIN"/>
+                &lt;category android:name="android.intent.category.LAUNCHER"/>
+            &lt;/intent-filter>
+        &lt;/activity>
+    &lt;/application>
+&lt;/manifest></pre>
+
+A linha <b>icon ... attack</b> vai apresentar erro porque a não tem uma imagem chamada '<b>attack.png</b>' na pasta <b>/drawable/</b><br>
+A imagem attack.png é a imagem do punho levantado.<br>
+Essa imagem é um botão no jogo e também é (definida no manifest) o ícone do app.<br><br>
+
+Dá para deixar o ícone 'default' se você não quiser alterar essa parte do arquivo manifest.<br><br>
+
+As alterações <b>significativas</b> para esse projeto são:
+<li>style Theme noTitleBar Fullscreen</li>
+<li>screenOrientation landscape</li><br>
+
+Pode ser necessário incluir mais algumas linhas nesse arquivo (ou excluir algumas) dependendo do compilador/versão que voce usar.<br><br>
+
+Edite esse arquivo até que não haja erros que impeçam que o executável seja gerado.
+
+<hr><h2>Incluindo as imagens no projeto</h2>
+
+Dentro da pasta <b>/main/</b> existe a pasta <b>/res/</b> e dentro dela várias outras pastas.<br><br>
+Nessas pastas estão os <b>res</b>ources (recursos) do app.<br><br>
+Recursos como imagens, sons, arquivos, textos.<br><br>
+
+Quando o compilador gera a base do app esses recursos são gerados. <b>Mas nesse projeto não precisaremos deles.</b><br>
+Todos os recursos do jogo são as imagens que estão dentro da pasta drawable que está <a onclick="location.hash='#l2';">linkada</a> no começo do tutorial<br><br>
+
+<img class=imagem src=screenshot2.png onclick="window.open(this.src,'_blank');"><br><br>
+
+Exclua todas essas pastas de dentro da pasta <b>/res/</b><br>
+Coloque no lugar a pasta drawable (descompactada)<br><br>
+
+Depois de excluir pode ser preciso editar mais um pouco o arquivo manifest.
+
+<hr><h2>Escrevendo Código</h2>
+
+O foco desse tutorial é <b>código java</b>.<br>
+Instalar o compilador, editar o xml e mover os arquivos para os endereços corretos são parte do processo, mas isso não é escrever código.<br><br>
+
+Desse ponto em diante o tutorial apresentará técnicas de escrita de código.
+
+<hr><h2>O arquivo MainActivity</h2>
+
+Esse é o arquivo que é executado quando o app inicia.<br><br>
+
+É melhor reescrever ele para que ele apenas se exiba.<br>
+Assim a gente elimina outros processamentos desnecessários.
+
+<pre>package tutorial.zombieWaves;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+
+public class MainActivity extends Activity {
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setContentView(new View(this));
+    }
+}</pre>
+
+Gere um arquivo <b>.apk</b> e instale em um celular.<br><br>
+
+Se você não fizer isso não adianta continuar nesse tutorial.
+
+<hr><h2>extends View</h2>
+
+A gente cria uma nova classe chamada ZombieWaves.<br>
+A classe onde a maior parte do jogo fica descrita.<br><br>
+
+Se você está programando do celular usando o AIDE, crie essa classe dentro do arquivo MainActivity.<br>
+Se você usa androidStudio ou intellijIdea pode criar um arquivo separado apenas para essa classe.
+
+<pre>package tutorial.zombieWaves;
+
+import android.content.Context;
+import android.view.View;
+
+class ZombieWaves extends View {
+    public ZombieWaves(Context c) {
+        super(c);
+    }
+}</pre>
+
+<hr><h2>Usando onDraw e Canvas</h2>
+
+O background do jogo é azul claro e o chão é cor-de-rosa.<br><br>
+Para desenhar esses elementos na tela é preciso utilizar onDraw, Canvas, Paint, DrawRect e outros truques:
+
+<pre>package tutorial.zombieWaves;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.View;
+
+class ZombieWaves extends View {
+    Canvas canvas;
+    Paint paint;
+    float screenHeight, screenWidth, fractionScreenSize; //variáveis que armazenam o tamanho da tela desse celular
+
+    public ZombieWaves(Context c) {
+        super(c);
+    }
+
+    protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) { //essa função é executada automaticamente quando inicia
+        super.onSizeChanged(newWidth, newHeight, oldWidth, oldHeight);
+        screenWidth = newWidth;
+        screenHeight = newHeight;
+        fractionScreenSize = screenHeight / 600;
+    }
+
+    protected void onDraw(Canvas c) {
+        super.onDraw(c);
+        canvas = c;
+        paint = new Paint();
+
+        paint.setColor(Color.rgb(200, 200, 200));
+        canvas.drawRect(0, 0, screenWidth, (float) (0.74 * screenHeight), paint); //céu
+        paint.setColor(Color.rgb(160, 160, 160));
+        canvas.drawRect(0, (float) (0.74 * screenHeight), screenWidth, screenHeight, paint); //chão
+    }
+}</pre>
+
+Na chamada da função setContentView na classe <b>MainActivity</b> a gente passa uma 'nova' instância da classe ZombieWaves:
+
+<pre>package tutorial.zombieWaves;
+
+import android.app.Activity;
+import android.os.Bundle;
+
+public class MainActivity extends Activity {
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setContentView(new ZombieWaves(this));
+    }
+}</pre>
+
+Crie uma função <b>drawStage()</b> (metodo da classe ZombieWaves)<br>
+Coloque dentro dela essas 4 linhas que desenham dois retângulos (céu e chão)<br>
+e chame a função de dentro da <b>onDraw</b>
+
+<hr><h2>Colocando o Joe na tela</h2>
+
+A classe Joe:
+<pre>package tutorial.zombieWaves;
+
+class Joe {
+    int position = 12;
+}</pre>
+
+Um atributo Bitmap na classe ZombieWaves:
+<pre>import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;</pre>
+<pre>    Bitmap joeIdleLeft;</pre>
+
+Uma variável chamada joe na classe ZombieWaves:
+<pre>    Joe joe = new Joe();</pre>
+
+
+Calculando o tamanho coreto do Joe na tela:<br>
+<pre>        Resources resources = getResources();
+        joeIdleLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeidleleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);</pre>
+
+O problema é que cada celular tem uma 'resolução de tela'<br>
+Alguns exibem 320px de largura, outros 400px, 460px...<br><br>
+
+Para lidar com essa situação o png é redimensionado<br>
+Multiplicado por um valor proporcional ao tamanho da tela<br><br>
+
+draw png<br>
+Na função onDraw
+<pre>        canvas.drawBitmap(joeIdleLeft, (int) (joe.position * screenWidth / 30), (int) (0.54 * screenHeight), paint);</pre>
+
+<hr><h2>Mudando a posição do Joe</h2>
+
+O jogo exibe um frame a cada 50 millisegundos.
+
+<pre>import java.util.Timer;
+import java.util.TimerTask;</pre>
+<pre>    TimerTask gameLoop = new TimerTask() {
+        public void run() {
+            //aqui vai o código do jogo (gameLoop)
+            //essa função vai calcular as posições e ações do joe e dos zumbis
+            invalidate();//call onDraw
+        }
+    };</pre>
+
+Na onSizeChanged
+<pre>        new Timer().schedule(gameLoop, 0, 50);</pre>
+
+Variável na classe Joe:
+<pre>    boolean direction;</pre>
+
+Colocar os botões na tela não é complicado:
+<pre>    Bitmap leftButton, rightButton, attackButton;</pre>
+<pre>        leftButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.left), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+        rightButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.right), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+        attackButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.attack), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);</pre>
+<pre>    void drawButtons() {
+        canvas.drawBitmap(leftButton, (int) (0.02 * screenWidth), (int) (0.77 * screenHeight), paint);
+        canvas.drawBitmap(rightButton, (int) (0.02 * screenWidth + 120 * fractionScreenSize), (int) (0.77 * screenHeight), paint);
+        canvas.drawBitmap(attackButton, (int) (0.92 * screenWidth - 120 * fractionScreenSize), (int) (0.77 * screenHeight), paint);
+    }
+</pre>
+
+O metodo <b>onTouchEvent</b> 'trata' a ação do user:
+<pre>    boolean leftButtonPressed, rightButtonPressed;</pre>
+
+<pre>    public boolean onTouchEvent(MotionEvent motionEvent) {
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            rightButtonPressed = false;
+            leftButtonPressed = false;
+        } else {
+            if (x < (0.02 * screenWidth) + (120 * fractionScreenSize) && y > 0.74 * screenHeight) {
+                joe.direction = true;
+                leftButtonPressed = true;
+            }
+            if (x > (0.02 * screenWidth) + (120 * fractionScreenSize) && x < (0.02 * screenWidth) + (300 * fractionScreenSize) && y > 0.74 * screenHeight) {
+                joe.direction = false;
+                rightButtonPressed = true;
+            }
+        }
+        return true;
+    }</pre>
+
+O código fica assim:
+<pre>package tutorial.zombieWaves;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.View;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.view.MotionEvent;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+class ZombieWaves extends View {
+    Joe joe = new Joe();
+    boolean leftButtonPressed, rightButtonPressed;
+
+    Canvas canvas;
+    Paint paint;
+    Bitmap joeIdleLeft, joeIdleRight;
+    Bitmap leftButton, rightButton, attackButton;
+
+    float screenHeight, screenWidth, fractionScreenSize; //variáveis que armazenam o tamanho da tela desse celular
+
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            rightButtonPressed = false;
+            leftButtonPressed = false;
+        } else {
+            if (x < (0.02 * screenWidth) + (120 * fractionScreenSize) && y > 0.74 * screenHeight) {
+                joe.direction = true;
+                leftButtonPressed = true;
+            }
+            if (x > (0.02 * screenWidth) + (120 * fractionScreenSize) && x < (0.02 * screenWidth) + (300 * fractionScreenSize) && y > 0.74 * screenHeight) {
+                joe.direction = false;
+                rightButtonPressed = true;
+            }
+        }
+        return true;
+    }
+
+    void joeStepLeft() {
+        joe.position--;
+    }
+
+    void joeStepRight() {
+        joe.position++;
+    }
+
+    TimerTask gameLoop = new TimerTask() {
+        public void run() {
+            if (leftButtonPressed && joe.position > 2) joeStepLeft();
+            if (rightButtonPressed && joe.position < 26) joeStepRight();
+            invalidate();//call onDraw
+        }
+    };
+
+    public ZombieWaves(Context c) {
+        super(c);
+    }
+
+    void drawButtons() {
+        canvas.drawBitmap(leftButton, (int) (0.02 * screenWidth), (int) (0.77 * screenHeight), paint);
+        canvas.drawBitmap(rightButton, (int) (0.02 * screenWidth + 120 * fractionScreenSize), (int) (0.77 * screenHeight), paint);
+        canvas.drawBitmap(attackButton, (int) (0.92 * screenWidth - 120 * fractionScreenSize), (int) (0.77 * screenHeight), paint);
+    }
+
+    void drawStage() {
+        paint.setColor(Color.rgb(200, 200, 200));
+        canvas.drawRect(0, 0, screenWidth, (float) (0.74 * screenHeight), paint); //céu
+        paint.setColor(Color.rgb(160, 160, 160));
+        canvas.drawRect(0, (float) (0.74 * screenHeight), screenWidth, screenHeight, paint); //chão
+    }
+
+    protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) { //essa função é executada automaticamente quando inicia
+        super.onSizeChanged(newWidth, newHeight, oldWidth, oldHeight);
+        screenWidth = newWidth;
+        screenHeight = newHeight;
+        fractionScreenSize = screenHeight / 600;
+
+        Resources resources = getResources();
+        joeIdleLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeidleleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeIdleRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeidleright), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+
+        leftButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.left), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+        rightButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.right), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+        attackButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.attack), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+
+        new Timer().schedule(gameLoop, 0, 50);
+    }
+
+    void drawJoe() {
+        Bitmap imgJoe;
+        if (joe.direction) {
+            imgJoe = joeIdleLeft;
+        } else {
+            imgJoe = joeIdleRight;
+        }
+        canvas.drawBitmap(imgJoe, (int) (joe.position * screenWidth / 30), (int) (0.54 * screenHeight), paint);
+    }
+
+    protected void onDraw(Canvas c) {
+        super.onDraw(c);
+        canvas = c;
+        paint = new Paint();
+
+        drawStage();
+        drawButtons();
+        drawJoe();
+    }
+}
+</pre>
+
+<hr><h2>Colocando Zumbis na Tela</h2>
+
+
+Zumbis se movem uma vez a cada 6 frames<br>
+Por isso existe a variável <b>moveDelay</b><br><br>
+
+<b>hittedDelay</b> é o tempo que o zumbi fica 'sentindo o ataque'
+
+<pre>package tutorial.zombieWaves;
+
+class Zombie {
+    boolean direction;
+    int moveDelay;
+    int attackDelay;
+    int hittedDelay = 0;
+    int position = 12;
+    int energy;
+}</pre>
+
+A classe Joe fica assim:
+
+<pre>package tutorial.zombieWaves;
+
+class Joe {
+    boolean direction;
+    int position = 12;
+    int energy = 4;
+    int score = 0;
+    int attackDelay = 0;
+    int hittedDelay = 0;
+}</pre>
+
+Atributo da classe ZombieWaves
+<pre>    Zombie[] zombie = new Zombie[10];</pre>
+
+Na onSizeChanged
+<pre>        qttZombies = 5;
+        for (int z = 0; z < 10; z++) zombie[z] = new Zombie();
+        for (int z = 0; z &lt; qttZombies; z++) setZombiePosition(zombie[z]);</pre>
+
+A função <b>setZombiePosition</b> coloca o zumbi na fila de zumbis que chegam.<br>
+Em uma posição mais ou menos aleatória.
+
+<pre>    void setZombiePosition(Zombie z) {
+        z.moveDelay = new Random().nextInt(12);
+        z.direction = new Random().nextBoolean();
+        z.attackDelay = 10;
+        z.energy = 3;
+        int padding;
+        if (joe.score < 12) padding = 6;
+        else padding = 3;
+        if (z.direction) {
+            int far = 30;
+            for (int n = 0; n &lt; qttZombies; n++)
+                if (zombie[n].position > far) far = zombie[n].position;
+            z.position = far + padding + new Random().nextInt(padding) + 1;
+        } else {
+            int far = 3;
+            for (int n = 0; n &lt; qttZombies; n++)
+                if (zombie[n].position < far) far = zombie[n].position;
+            z.position = far - padding - new Random().nextInt(padding) - 1;
+        }
+    }
+</pre>
+<pre>import java.util.Random;</pre>
+
+Na gameLoop
+<pre>                zombieWalk();</pre>
+
+<pre>    void zombieWalk() {
+        for (int z = 0; z < qttZombies; z++) {
+            zombie[z].moveDelay--;
+            if (zombie[z].moveDelay < 1) {
+                if (zombie[z].direction) {
+                    if (zombie[z].position > joe.position + 2) zombie[z].position--;
+                    else zombie[z].position = joe.position + 2;
+                } else {
+                    if (zombie[z].position < joe.position - 2) zombie[z].position++;
+                    else zombie[z].position = joe.position - 2;
+                }
+                zombie[z].moveDelay = 6;
+            }
+        }
+    }</pre>
+
+A função que coloca o zumbi na tela:
+<pre>    void drawZombie(Zombie z) {
+        Bitmap imgZombie;
+        if (z.direction) imgZombie = zombieWalkingLeft;
+        else imgZombie = zombieWalkingRight;
+        canvas.drawBitmap(imgZombie, (int) (z.position * screenWidth / 30), (int) (0.54 * screenHeight), paint);
+    }</pre>
+
+
+<hr><h2>Código Final</h2>
+
+Com movimentação, ataques, delay do dano, tela de game-over e tudo mais
+
+<pre>package tutorial.zombieWaves;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.view.MotionEvent;
+import android.view.View;
+
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
+class ZombieWaves extends View {
+    Joe joe = new Joe();
+    Zombie[] zombie = new Zombie[10];
+
+    Canvas canvas;
+    Paint paint;
+
+    boolean leftButtonPressed, rightButtonPressed;
+
+    int qttZombies, endScreenDelay;
+
+    float screenHeight, screenWidth, fractionScreenSize;
+
+    Bitmap heartLeft, heartRight;
+    Bitmap leftButton, rightButton, attackButton;
+    Bitmap skull;
+
+    Bitmap joeIdleLeft, joeIdleRight;
+    Bitmap joeWalkingLeft, joeWalkingRight;
+    Bitmap joeAttackLeft, joeAttackRight;
+    Bitmap joeInjury;
+
+    Bitmap zombieWalkingLeft, zombieWalkingRight;
+    Bitmap zombieAttackLeft, zombieAttackRight;
+    Bitmap zombieInjury;
+
+    public ZombieWaves(Context context) {
+        super(context);
+    }
+
+    void drawStage() {
+        if (joe.energy == 0) paint.setColor(Color.rgb(240, 240, 240));
+        else paint.setColor(Color.rgb(200, 200, 200));
+        canvas.drawRect(0, 0, screenWidth, (float) (0.74 * screenHeight), paint);
+        paint.setColor(Color.rgb(160, 160, 160));
+        canvas.drawRect(0, (float) (0.74 * screenHeight), screenWidth, screenHeight, paint);
+    }
+
+    void drawButtons() {
+        canvas.drawBitmap(leftButton, (int) (0.02 * screenWidth), (int) (0.77 * screenHeight), paint);
+        canvas.drawBitmap(rightButton, (int) (0.02 * screenWidth + 120 * fractionScreenSize), (int) (0.77 * screenHeight), paint);
+        canvas.drawBitmap(attackButton, (int) (0.92 * screenWidth - 120 * fractionScreenSize), (int) (0.77 * screenHeight), paint);
+    }
+
+    void drawEnergyBar() {
+        for (int i = 0; i < joe.energy; i++) {
+            if (i % 2 == 0)
+                canvas.drawBitmap(heartLeft, (int) ((0.062 * screenHeight) + 53 * (i * fractionScreenSize)), (int) (0.05 * screenHeight), paint);
+            else
+                canvas.drawBitmap(heartRight, (int) ((0.062 * screenHeight) + 53 * (i * fractionScreenSize)), (int) (0.05 * screenHeight), paint);
+        }
+    }
+
+    void drawJoe() {
+        Bitmap imgJoe;
+        if (joe.hittedDelay > 0) imgJoe = joeInjury;
+        else if (joe.direction) {
+            if (joe.attackDelay > 0) imgJoe = joeAttackLeft;
+            else {
+                if (leftButtonPressed) imgJoe = joeWalkingLeft;
+                else imgJoe = joeIdleLeft;
+            }
+        } else {
+            if (joe.attackDelay > 0) imgJoe = joeAttackRight;
+            else {
+                if (rightButtonPressed) imgJoe = joeWalkingRight;
+                else imgJoe = joeIdleRight;
+            }
+        }
+        canvas.drawBitmap(imgJoe, (int) (joe.position * screenWidth / 30), (int) (0.54 * screenHeight), paint);
+    }
+
+    void drawZombie(Zombie z) {
+        Bitmap imgZombie;
+        if (z.hittedDelay != 0) imgZombie = zombieInjury;
+        else if (z.attackDelay < 5 && (z.position == joe.position + 2 || z.position == joe.position - 2)) {
+            if (z.direction) imgZombie = zombieAttackLeft;
+            else imgZombie = zombieAttackRight;
+        } else {
+            if (z.direction) imgZombie = zombieWalkingLeft;
+            else imgZombie = zombieWalkingRight;
+        }
+        canvas.drawBitmap(imgZombie, (int) (z.position * screenWidth / 30), (int) (0.54 * screenHeight), paint);
+    }
+
+    void drawScore() {
+        paint.setColor(Color.rgb(65, 65, 65));
+        canvas.drawRect(0.0f, 0.0f, screenWidth, screenHeight, paint);
+        paint.setColor(Color.rgb(2, 2, 2));
+        paint.setTextAlign(Paint.Align.RIGHT);
+        paint.setTextSize((float) (0.16 * (double) screenHeight));
+        canvas.drawText(joe.score + " x", (float) ((0.85 * (double) screenWidth)), (float) ((0.22 * (double) screenHeight)), paint);
+        canvas.drawBitmap(skull, (float) ((0.87 * (double) screenWidth)), (float) ((0.08 * (double) screenHeight)), paint);
+    }
+
+    void init() {
+        joe = new Joe();
+
+        qttZombies = 5;
+        for (int z = 0; z < 10; z++) zombie[z] = new Zombie();
+        for (int z = 0; z < qttZombies; z++) setZombiePosition(zombie[z]);
+
+        endScreenDelay = 22;
+    }
+
+    void joePunch() {
+        for (int z = 0; z < qttZombies; z++) {
+            if (joe.attackDelay == 4 && zombie[z].hittedDelay == 0 && ((!joe.direction && zombie[z].position == joe.position + 2) || (joe.direction && zombie[z].position == joe.position - 2))) {
+                zombie[z].hittedDelay = 4;
+                zombie[z].attackDelay = 10;
+                zombie[z].energy--;
+            }
+        }
+        if (joe.attackDelay > 0) joe.attackDelay--;
+    }
+
+    void zombieTake() {
+        for (int z = 0; z < qttZombies; z++) {
+            if (zombie[z].hittedDelay > 0) zombie[z].hittedDelay--;
+            if (zombie[z].energy == 0) {
+                setZombiePosition(zombie[z]);
+                joe.score++;
+                if (joe.score == 12) {
+                    qttZombies = 10;
+                    for (int j = 5; j < qttZombies; ++j) setZombiePosition(zombie[j]);
+                }
+            }
+        }
+    }
+
+    void zombieWalk() {
+        for (int z = 0; z < qttZombies; z++) {
+            zombie[z].moveDelay--;
+            if (zombie[z].moveDelay < 1) {
+                if (zombie[z].direction) {
+                    if (zombie[z].position > joe.position + 2) zombie[z].position--;
+                    else zombie[z].position = joe.position + 2;
+                } else {
+                    if (zombie[z].position < joe.position - 2) zombie[z].position++;
+                    else zombie[z].position = joe.position - 2;
+                }
+                zombie[z].moveDelay = 6;
+            }
+        }
+    }
+
+    void joeStepLeft() {
+        boolean canMove = true;
+        for (int z = 0; z < qttZombies; z++)
+            if (zombie[z].position == joe.position - 2) canMove = false;
+        if (canMove) joe.position--;
+    }
+
+    void joeStepRight() {
+        boolean canMove = true;
+        for (int z = 0; z < qttZombies; z++)
+            if (zombie[z].position == joe.position + 2) canMove = false;
+        if (canMove) joe.position++;
+    }
+
+    void zombiePunch() {
+        for (int z = 0; z < qttZombies; z++) {
+            if (zombie[z].hittedDelay == 0 && (zombie[z].position == joe.position + 2 || zombie[z].position == joe.position - 2))
+                zombie[z].attackDelay--;
+            if (zombie[z].attackDelay == 0) zombie[z].attackDelay = 20;
+            if (zombie[z].attackDelay == 4 && joe.hittedDelay == 0) {
+                joe.hittedDelay = 5;
+                joe.energy--;
+            }
+        }
+        if (joe.energy < 1) endScreenDelay = 22;
+    }
+
+    void setZombiePosition(Zombie z) {
+        z.moveDelay = new Random().nextInt(12);
+        z.direction = new Random().nextBoolean();
+        z.attackDelay = 10;
+        z.energy = 3;
+        int padding;
+        if (joe.score < 12) padding = 6;
+        else padding = 3;
+        if (z.direction) {
+            int far = 30;
+            for (int n = 0; n < qttZombies; n++)
+                if (zombie[n].position > far) far = zombie[n].position;
+            z.position = far + padding + new Random().nextInt(padding) + 1;
+        } else {
+            int far = 3;
+            for (int n = 0; n < qttZombies; n++)
+                if (zombie[n].position < far) far = zombie[n].position;
+            z.position = far - padding - new Random().nextInt(padding) - 1;
+        }
+    }
+
+    TimerTask gameLoop = new TimerTask() {
+        public void run() {
+            if (joe.energy > 0) {
+                joePunch();
+                zombieTake();
+                zombieWalk();
+                if (joe.hittedDelay > 0) joe.hittedDelay--;
+                if (leftButtonPressed && joe.position > 2 && joe.hittedDelay == 0) joeStepLeft();
+                if (rightButtonPressed && joe.position < 26 && joe.hittedDelay == 0) joeStepRight();
+                zombiePunch();
+            } else if (endScreenDelay > 0) endScreenDelay--;
+            invalidate();//call onDraw
+        }
+    };
+
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+        if (joe.energy == 0 && endScreenDelay == 0 && x > 0.8 * screenWidth && y < 0.60 * screenHeight) {
+            init();
+        } else {
+            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                rightButtonPressed = false;
+                leftButtonPressed = false;
+            } else {
+                if (x < (0.02 * screenWidth) + (120 * fractionScreenSize) && y > 0.74 * screenHeight) {
+                    joe.direction = true;
+                    leftButtonPressed = true;
+                }
+                if (x > (0.02 * screenWidth) + (120 * fractionScreenSize) && x < (0.02 * screenWidth) + (300 * fractionScreenSize) && y > 0.74 * screenHeight) {
+                    joe.direction = false;
+                    rightButtonPressed = true;
+                }
+                if (x > 0.8 * screenWidth && y > 0.74 * screenHeight && joe.attackDelay == 0 && joe.hittedDelay == 0) {
+                    joe.attackDelay = 4;
+                }
+            }
+        }
+        return true;
+    }
+
+    protected void onDraw(Canvas c) {
+        super.onDraw(c);
+        canvas = c;
+        paint = new Paint();
+        if (endScreenDelay == 0) drawScore();
+        else {
+            drawStage();
+            drawButtons();
+            drawEnergyBar();
+            drawJoe();
+            for (int z = 0; z < qttZombies; z++)
+                drawZombie(zombie[z]);
+        }
+    }
+
+    protected void onSizeChanged(int newWidth, int newHeight, int oldWidth, int oldHeight) { //called when app start
+        super.onSizeChanged(newWidth, newHeight, oldWidth, oldHeight);
+        screenWidth = newWidth;
+        screenHeight = newHeight;
+        fractionScreenSize = screenHeight / 600;
+
+        Resources resources = getResources();
+
+        heartLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.heartleft), (int) (48 * fractionScreenSize), (int) (54 * fractionScreenSize), true);
+        heartRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.heartright), (int) (48 * fractionScreenSize), (int) (54 * fractionScreenSize), true);
+
+        leftButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.left), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+        rightButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.right), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+        attackButton = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.attack), (int) (120 * fractionScreenSize), (int) (120 * fractionScreenSize), true);
+
+        joeIdleLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeidleleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeIdleRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeidleright), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeWalkingLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joewalkingleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeWalkingRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joewalkingright), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeAttackLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeattackleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeAttackRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeattackright), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        joeInjury = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.joeinjury), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+
+        zombieWalkingLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.zombiewalkingleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        zombieWalkingRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.zombiewalkingright), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        zombieInjury = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.zombieinjury), (int) (130 * fractionScreenSize), (int) (140 * fractionScreenSize), true);
+        zombieAttackLeft = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.zombieattackleft), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+        zombieAttackRight = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.zombieattackright), (int) (130 * fractionScreenSize), (int) (130 * fractionScreenSize), true);
+
+        skull = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(resources, R.drawable.skull), (int) (100 * fractionScreenSize), (int) (100 * fractionScreenSize), true);
+
+        init();
+        new Timer().schedule(gameLoop, 0, 50);
+    }
+}</pre>
+
+</div>
+	<br><br>
+	<footer><button onclick="location.href='../../contato.htm';">contato</button></footer>
+	<script src="../../script.js"></script>
+</body>
+</html>

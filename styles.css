@@ -1,0 +1,136 @@
+﻿@keyframes entrada {
+	from {
+		opacity: 0;
+		margin-top: 200px;
+	}
+	to {
+		opacity: 1;
+		margin-top: 0px;
+	}
+}
+
+a {
+	color: #111199;
+	cursor: pointer;
+	text-decoration: none;
+	font-weight: bold;
+}
+
+body {
+	background-color: #e1e1e1;
+	margin: 0px;
+	font-family: "Segoe Ui";
+}
+
+footer {
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+	background-color: #000000;
+	text-align: right;
+}
+
+footer button {
+	margin: 8px;
+}
+
+h1 {
+	background-color: #000000;
+	padding: 20px;
+	font-family: "Courier";
+	color: #ffffff;
+	cursor: pointer;
+}
+
+h2 {
+	background-color: #444444;
+	padding: 10px;
+	color: #ffffff;
+}
+
+pre {
+	background-color: #ffffff;
+	padding: 12px;
+	overflow: scroll;
+	max-height: 460px;
+}
+
+.imagem {
+	width: 100%;
+	max-width: 500px;
+	cursor: pointer;
+	filter: grayscale(50%);
+}
+
+.licao {
+	background-color: #ffffff;
+	padding: 12px;
+	border-radius: 8px;
+}
+
+.licao button {
+	float: right;
+}
+
+.licao li {
+	margin-bottom: 8px;
+}
+
+.tutorial {
+	background-color: #ffffff;
+	border: 1px solid #aaaaaa;
+	display: inline-block;
+	padding: 8px;
+	font-size: 13px;
+	border-radius: 8px;
+	margin: 0px 20px 18px 0px;
+}
+
+.tutorial button{
+	padding: 8px 100px 8px 100px;
+	margin-top: 6px;
+}
+
+.tutorial div {
+	background-color: #444444;
+	color: #ffffff;
+	padding: 8px 0px;
+	text-align: center;
+	font-family: Courier;
+	font-size: 16px;
+	margin-bottom: 6px;
+	border-radius: 4px 4px 0px 0px;
+}
+
+.tutorial small {
+	float: right;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-top: 6px;
+}
+
+#conteudo {
+	margin-right: 20px;
+	margin-bottom: 20px;
+	min-height: 200px;
+}
+
+#listagem {
+	max-width: 300px;
+}
+
+#main {
+	margin-left: 20px;
+}
+
+#main div {
+	animation: entrada 1s;
+}
+
+#menu {
+	max-width: 960px;
+}
+
+#principal {
+	margin-top: 100vh;
+}

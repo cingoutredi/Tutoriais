@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+	<title>Entre em contato</title>
+	<meta name="description" content="Entre em contato com a equipe cingoutredi para sugestões, reclamações, elogios ou qualquer outro assunto.">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="styles.css">
+	<meta name="google-site-verification" content="3IqTasuwIcwuzjUSpqrxM0VfcRGI-nFKsn4m4JA0Fws" />
+</head>
+
+<body>
+	<h1 onclick="location.href='index.htm';">Tutoriais</h1>
+	<div id="main">
+	<h2>Entre em contato</h2>
+	<a href="mailto:cingoutredi@gmail.com" target="_blank">cingoutredi@gmail.com</a><br><br>
+	<a href="https://api.whatsapp.com/send/?phone=5512991089886" target="_blank">(12) 99108-9886</a><br><br>
+	<button onclick="location.href='index.htm';">home</button>
+	<h2>Comente</h2>
+	<div style='margin:0px 20px -10px 0px;'><div id="disqus_thread"></div></div>
+	</div>
+	<br><br>
+	<footer><button onclick="location.href='index.htm';">home</button></footer>
+</body>
+<script>
+disqus_config = function () {
+	this.page.url = "https://cingoutredi.github.io/Tutoriais/contato.htm";
+	this.page.identifier = "contato";
+};
+s = document.createElement('script');
+s.src = 'https://tutoriais-sobre-gamedev.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(document.head || document.body).appendChild(s);
+</script>
+</html>
